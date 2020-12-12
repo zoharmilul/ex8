@@ -17,32 +17,22 @@ def _constraint_helper(n, blocks, row, options_list, ind):
         if _can_fill(row, value, num):
             row = _fill_row(row, value, num)
             _constraint_helper(n, blocks[1:], row, options_list, num)
-            row = _unfill_row(row, value, num)
+            row = _fill_row(row, value, num, EMPTY)
     return options_list
 
 
 def _can_fill(row , value , ind):
     return ind <= len(row) - value and row[ind] == 0 and row[ind - 1] != 1
 
-
-def _unfill_row(row, value, ind):
-    for num in range(value):
-        row[ind] = EMPTY
-        ind += 1
-    return row
-
-
-def _fill_row(row, value, ind):
+def _fill_row(row, value, ind, action = FILLED):
     if value > len(row):
         return row
     if ind > len(row) - value:
         return row
     for num in range(value):
-        row[ind] = FILLED
+        row[ind] = action
         ind += 1
     return row
-print(constraint_satisfactions(3, [1]))
-print(constraint_satisfactions(3, [2]))
-print(constraint_satisfactions(3, [1,1]))
-print(constraint_satisfactions(4, [1,1]))
-print(constraint_satisfactions(5, [2,1]))
+
+def row_variations(row, blocks):
+    pass
