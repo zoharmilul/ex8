@@ -40,13 +40,17 @@ def _fill_row(row, value, ind, action=FILLED):
 
 
 def _can_fill_variation(row, value, index):
-    return 0 not in row[index:index+value]
+    if index + value > len(row):
+        return False
+    elif index + value == len(row):
+        return 0 not in row[index:index + value]
+    return 0 not in row[index:index+value] and row[index + value] != FILLED
 
 
 def _check_sum(row, action = ""):
     sum = 0
 
-    if action == "sum_known":
+    if action == "sum_filled":
         return row.count(1)
 
     for i in row:
@@ -71,7 +75,7 @@ def row_variations(row, blocks):
 def _row_variations_helper(row, blocks, ind, sum, lst):
     if not blocks:
         temp_row = row[:]
-        if _check_sum(temp_row, "sum_known") == sum:
+        if _check_sum(temp_row, "sum_filled") == sum:
             lst.append(temp_row)
         return row
     for index in range(ind, len(row)):
@@ -86,3 +90,12 @@ def _row_variations_helper(row, blocks, ind, sum, lst):
             _row_variations_helper(row, blocks[1:], index + 1, sum, lst)
             _fill_row(row, blocks[0] - 1, index + 1, UNKNOWN)
     return lst
+
+def intersection_row(rows):
+    pass
+
+def _intersection_row_helper(rows,index, value):
+    if not rows:
+        return value
+    if rows[0][index] == rows[1][index]:
+        return _intersection_row_helper(rows[1:], index, value)
