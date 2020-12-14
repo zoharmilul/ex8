@@ -43,8 +43,12 @@ def _can_fill_variation(row, value, index):
     return 0 not in row[index:index+value]
 
 
-def _check_sum(row):
+def _check_sum(row, action = ""):
     sum = 0
+
+    if action == "sum_known":
+        return row.count(1)
+
     for i in row:
         sum += i
     return sum
@@ -59,14 +63,15 @@ def change_unknown_to_empty(row):
 def row_variations(row, blocks):
     sum = _check_sum(blocks)
     options = _row_variations_helper(row, blocks, 0, sum, [])
+    for option in options:
+        change_unknown_to_empty(option)
     return options
 
 
 def _row_variations_helper(row, blocks, ind, sum, lst):
     if not blocks:
-        temp_row = copy.deepcopy(row)
-        change_unknown_to_empty(temp_row)
-        if _check_sum(temp_row) == sum:
+        temp_row = row[:]
+        if _check_sum(temp_row, "sum_known") == sum:
             lst.append(temp_row)
         return row
     for index in range(ind, len(row)):
@@ -81,4 +86,3 @@ def _row_variations_helper(row, blocks, ind, sum, lst):
             _row_variations_helper(row, blocks[1:], index + 1, sum, lst)
             _fill_row(row, blocks[0] - 1, index + 1, UNKNOWN)
     return lst
-
