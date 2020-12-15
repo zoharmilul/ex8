@@ -69,7 +69,8 @@ def change_unknown_to_empty(row):
 
 def row_variations(row, blocks):
     sum = _check_sum(blocks)
-    options = _row_variations_helper(row, blocks, 0, sum, [])
+    temp_row = row[:]
+    options = _row_variations_helper(temp_row, blocks, 0, sum, [])
     for option in options:
         change_unknown_to_empty(option)
     return options
@@ -109,40 +110,39 @@ def _intersection_row_helper(rows, index, value):
         return _intersection_row_helper(rows[1:], index, value)
     return UNKNOWN
 
+
 def switch_row_to_col(rows):
     cols = []
     for index in range(len(rows[0])):
         my_list = [row[index] for row in rows]
         cols.append(my_list)
-    return(cols)
+    return cols
+
+def print_board(board):
+    for i in range(len(board)):
+        for j in range(len(board[0])):
+            print(board[i][j], end = " ")
+        print()
+    print()
 
 
 def solve_easy_nonogram(constraints):
-    constraints_lst = []
-    for col in range(len(constraints)):
-        temp_list = []
-        for index in range(len(constraints[col])):
-            temp_list.append(intersection_row(constraint_satisfactions(len(constraints[col]), constraints[col][index])))
-        constraints_lst.append(temp_list)
-
-    constraints_rows = constraints_lst[0]
-    constraints_cols = constraints_lst[1]
-
-    solve_easy_helper(constraints_rows, constraints_cols)
-    return constraints_lst
+    rows = []
+    for index in range(len(constraints[0])):
+        rows.append(constraint_satisfactions(len(constraints[0]), constraints[0][index]))
+    board = []
+    for index in range(len(rows)):
+        board.append(intersection_row(rows[index]))
+    _solve_easy_helper(constraints[1], board)
 
 
-def solve_easy_helper(con_row, con_col):
-    temp_row  = switch_row_to_col(con_row)
-    new_con = []
-    for i in range(len(temp_row)):
-        new_con.append(intersection_row([temp_row[i], con_col[i]]))
-
-    print(new_con)
+def _solve_easy_helper(constraints, board):
+    cols = []
+    for index in range(len(board)):
+        cols.append(row_variations(board[index], constraints[index]))
+    print_board(board)
 
 
-
-print(solve_easy_nonogram([ [ [], [4], [5], [2, 2], [1, 3] ], [ [], [2], [1], [2, 2], [2, 2]]] ))
-"""print(solve_easy_nonogram([[ [1], [1] ], [ [1], [1] ]]))
-print(switch_row_to_col([[0, 0, 0, 0, 0], [-1, 1, 1, 1, -1], [1, 1, 1, 1, 1], [1, 1, 0, 1, 1], [1, 0, 1, 1, 1]]))
+solve_easy_nonogram([[ [2], [2], [1,1] ], [ [3], [2], [1] ]])
+"""print(switch_row_to_col([[0, 0, 0, 0, 0], [-1, 1, 1, 1, -1], [1, 1, 1, 1, 1], [1, 1, 0, 1, 1], [1, 0, 1, 1, 1]]))
 print(switch_row_to_col([[0, -1, 1, 1, 1], [0, 1, 1, 1, 0], [0, 1, 1, 0, 1], [0, 1, 1, 1, 1], [0, -1, 1, 1, 1]]))"""
