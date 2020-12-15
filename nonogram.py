@@ -4,7 +4,10 @@ EMPTY = 0
 UNKNOWN = -1
 
 
-def constraint_satisfactions (n, blocks):
+def constraint_satisfactions(n, blocks):
+    if not blocks:
+        options_list = [[EMPTY] * n]
+        return options_list
     options_list = _constraint_helper(n, blocks, [UNKNOWN] * n, [], 0)
     for option in options_list:
         change_unknown_to_empty(option)
@@ -93,19 +96,53 @@ def _row_variations_helper(row, blocks, ind, sum, lst):
 
 
 def intersection_row(rows):
-    intersection_lst = []
+    intersection_lst =[]
     for index in range(len(rows[0])):
         intersection_lst.append(_intersection_row_helper(rows, index, rows[0][index]))
     return intersection_lst
 
 
 def _intersection_row_helper(rows, index, value):
-    if len(rows) == 1 or not rows:
+    if len(rows) == 1:
         return value
     if rows[0][index] == rows[1][index]:
         return _intersection_row_helper(rows[1:], index, value)
     return UNKNOWN
 
+def switch_row_to_col(rows):
+    cols = []
+    for index in range(len(rows[0])):
+        my_list = [row[index] for row in rows]
+        cols.append(my_list)
+    return(cols)
 
-print(intersection_row([[0, 0, 1], [0, 1, 1], [0, 0, 1]]))
-print(intersection_row([[0, 1, -1], [-1, -1, -1]]))
+
+def solve_easy_nonogram(constraints):
+    constraints_lst = []
+    for col in range(len(constraints)):
+        temp_list = []
+        for index in range(len(constraints[col])):
+            temp_list.append(intersection_row(constraint_satisfactions(len(constraints[col]), constraints[col][index])))
+        constraints_lst.append(temp_list)
+
+    constraints_rows = constraints_lst[0]
+    constraints_cols = constraints_lst[1]
+
+    solve_easy_helper(constraints_rows, constraints_cols)
+    return constraints_lst
+
+
+def solve_easy_helper(con_row, con_col):
+    temp_row  = switch_row_to_col(con_row)
+    new_con = []
+    for i in range(len(temp_row)):
+        new_con.append(intersection_row([temp_row[i], con_col[i]]))
+
+    print(new_con)
+
+
+
+print(solve_easy_nonogram([ [ [], [4], [5], [2, 2], [1, 3] ], [ [], [2], [1], [2, 2], [2, 2]]] ))
+"""print(solve_easy_nonogram([[ [1], [1] ], [ [1], [1] ]]))
+print(switch_row_to_col([[0, 0, 0, 0, 0], [-1, 1, 1, 1, -1], [1, 1, 1, 1, 1], [1, 1, 0, 1, 1], [1, 0, 1, 1, 1]]))
+print(switch_row_to_col([[0, -1, 1, 1, 1], [0, 1, 1, 1, 0], [0, 1, 1, 0, 1], [0, 1, 1, 1, 1], [0, -1, 1, 1, 1]]))"""
