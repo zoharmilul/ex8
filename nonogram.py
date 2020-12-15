@@ -91,11 +91,21 @@ def _row_variations_helper(row, blocks, ind, sum, lst):
             _fill_row(row, blocks[0] - 1, index + 1, UNKNOWN)
     return lst
 
-def intersection_row(rows):
-    pass
 
-def _intersection_row_helper(rows,index, value):
-    if not rows:
+def intersection_row(rows):
+    intersection_lst = []
+    for index in range(len(rows[0])):
+        intersection_lst.append(_intersection_row_helper(rows, index, rows[0][index]))
+    return intersection_lst
+
+
+def _intersection_row_helper(rows, index, value):
+    if len(rows) == 1 or not rows:
         return value
     if rows[0][index] == rows[1][index]:
         return _intersection_row_helper(rows[1:], index, value)
+    return UNKNOWN
+
+
+print(intersection_row([[0, 0, 1], [0, 1, 1], [0, 0, 1]]))
+print(intersection_row([[0, 1, -1], [-1, -1, -1]]))
