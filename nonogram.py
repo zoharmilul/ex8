@@ -126,7 +126,7 @@ def print_board(board):
     print()
 
 
-def solve_easy_nonogram(constraints):
+"""def solve_easy_nonogram(constraints):
     rows = []
     for index in range(len(constraints[0])):
         rows.append(constraint_satisfactions(len(constraints[0]), constraints[0][index]))
@@ -140,9 +140,66 @@ def _solve_easy_helper(constraints, board):
     cols = []
     for index in range(len(board)):
         cols.append(row_variations(board[index], constraints[index]))
-    print_board(board)
+    print_board(board)"""
 
 
-solve_easy_nonogram([[ [2], [2], [1,1] ], [ [3], [2], [1] ]])
+
+def solve_easy_nonogram(constraints):
+    rows = []
+    for index in range(len(constraints[0])):
+        rows.append(constraint_satisfactions(len(constraints[0]), constraints[0][index]))
+    initial_board = []
+    for index in range(len(rows)):
+        initial_board.append(intersection_row(rows[index]))
+    _solve_easy_nonogram_helper(constraints, initial_board, [], [])
+
+
+
+def _solve_easy_nonogram_helper(constraints, board, rows, cols):
+    if check_board(board):
+        print_board(board)
+        return
+    temp_cols = switch_row_to_col(board)
+    cols_options = []
+    for index in range(len(temp_cols)):
+        if UNKNOWN not in temp_cols[index]:
+            cols_options.append([temp_cols[index]])
+        else:
+            cols_options.append(row_variations(temp_cols[index], constraints[1][index]))
+    for index in range(len(cols_options)):
+        if len(cols_options[index]) == 1:
+            cols.append(cols_options[index][0])
+        else:
+            cols.append(intersection_row(cols_options[index]))
+
+    temp_rows = switch_row_to_col(cols)
+    rows_options = []
+    for index in range(len(temp_rows)):
+        if UNKNOWN not in temp_rows[index]:
+            rows_options.append([temp_rows[index]])
+        else:
+            rows_options.append(row_variations(temp_rows[index], constraints[0][index]))
+    for index in range(len(rows_options)):
+        if len(rows_options[index]) == 1:
+            rows.append(rows_options[index][0])
+        else:
+            rows.append(intersection_row(rows_options[index]))
+
+    if rows == board:
+        print_board(rows)
+        return
+    else:
+        _solve_easy_nonogram_helper(constraints, rows, [], [])
+
+
+def check_board(board):
+    for i in range(len(board)):
+        if UNKNOWN in board[i]:
+            return False
+        return True
+
+
+solve_easy_nonogram([[ [2, 1], [1, 2], [1, 2], [2, 2], [3] ], [ [5], [1, 2], [1], [4], [3] ]])
+#solve_easy_nonogram([[ [2], [2], [1,1] ], [ [3], [2], [1] ]])
 """print(switch_row_to_col([[0, 0, 0, 0, 0], [-1, 1, 1, 1, -1], [1, 1, 1, 1, 1], [1, 1, 0, 1, 1], [1, 0, 1, 1, 1]]))
 print(switch_row_to_col([[0, -1, 1, 1, 1], [0, 1, 1, 1, 0], [0, 1, 1, 0, 1], [0, 1, 1, 1, 1], [0, -1, 1, 1, 1]]))"""
